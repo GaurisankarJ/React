@@ -202,6 +202,260 @@ class StatefulComponent extends React.Component {
         );
     }
 }
+//*********************************************************************************************************************
+//To set the state
+class SetTheState extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            theState: "Initial State",
+            countState: 0
+        };
+        this.handleClick = this.handleClick.bind(this);{/*Binding this to a class method*/}
+    }
+    handleClick() {
+        this.setState({
+            theState: "State",
+            countState: this.state.countState + 1
+        });
+    }
+    render() {
+        return (
+            <div>
+                <h2><u>The STATE</u></h2>
+                <h4>{this.state.theState}<sup>{this.state.countState}</sup></h4>
+                <button className="btn btn-default btn-primary" onClick={this.handleClick}>Change State</button>
+            </div>
+        );
+    }
+}
+//To toggle an element
+class ToggleState extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            visibility: false
+        };
+        this.toggleVisibility = this.toggleVisibility.bind(this);
+    }
+    toggleVisibility() {
+        if(this.state.visibility) {
+            this.setState({
+                visibility: false
+            });
+        } else {
+            this.setState({
+                visibility: true
+            })
+        }
+    }
+    render() {
+        if(this.state.visibility) {
+            return (
+                <div>
+                    <button className="btn btn-default btn-primary" onClick={this.toggleVisibility}>Hide</button>
+                    <h4>NOW YOU SEE ME!!</h4>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <button className="btn btn-default btn-primary" onClick={this.toggleVisibility}>Show</button>
+                </div>
+            );
+        }
+    }
+}
+//Simple counter
+class SimpleCounter extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            count: 0
+        };
+        this.increment = this.increment.bind(this);
+        this.decrement = this.decrement.bind(this);
+        this.reset = this.reset.bind(this);
+    }
+    increment() {
+        this.setState({
+            count: this.state.count + 1
+        });
+    }
+    decrement() {
+        this.setState({
+            count: this.state.count - 1
+        });
+    }
+    reset() {
+        this.setState({
+            count: 0
+        });
+    }
+    render() {
+        return (
+            <div>
+                <h3>The count is : {this.state.count}</h3>
+                <button className="btn btn-default button-success" onClick={this.increment}>Increment</button>
+                <button className="btn btn-default button-danger" onClick={this.decrement}>Decrement</button>
+                <button className="btn btn-default button-primary" onClick={this.reset}>Reset</button>
+            </div>
+        );
+    }
+}
+//To create a controlled input
+class ControlledInput extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            input: ""
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            input: event.target.value
+        });
+    }
+    render() {
+        return (
+            <div>
+                <input value={this.state.value} placeholder="Enter Input" onChange={this.handleChange} />
+                <h4>Controlled input : {this.state.input}</h4>
+            </div> 
+        );
+    }
+}
+//To create a controlled form
+class ControlledForm extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            input: "",
+            submit: ""
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            input: event.target.value
+        });
+    }
+    handleSubmit(event) {
+        event.preventDefault();{/*To prevent the default form submit behavior which will refresh the web page*/}
+        this.setState({
+            input: "",
+            submit: this.state.input
+        });
+    }
+    render() {
+        return (
+            <div>
+                <form onSubmit={this.handleSubmit}>
+                    <input value={this.state.input} placeholder="Enter what to submit..." onChange={this.handleChange} />
+                    <button className="btn btn-default button-primary" type="submit">Submit</button>
+                </form>
+                <h2>{this.state.submit}</h2>
+            </div>
+        );
+    }
+}
+//Pass state, callback as props to child components
+//State flows in one direction down the tree of your application's components, from the stateful parent component to child components
+class DisplayString extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <div>
+                <h2>{this.props.text}</h2>
+            </div>
+        );
+    }
+}
+class DisplayNumber extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <div>
+                <h3>{this.props.numb}</h3>
+            </div>
+        );
+    }
+}
+class GetNumber extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <div>
+                <h2>Enter number: </h2>
+                <input value={this.props.input} placeholder="Number..." onChange={this.props.handleChange} />
+            </div>
+        );
+    }
+}
+class Display extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            text: "CR",
+            numb: 7
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            numb: event.target.value
+        });
+    }
+    render() {
+        return (
+            <div>
+                <DisplayString text={this.state.text} />
+                <DisplayNumber numb={this.state.numb} />
+                <GetNumber input={this.state.numb} handleChange={this.handleChange} />
+            </div>
+        );
+    }
+}
+//Using lifecycle methods
+//componentWillMount(), componentDidMount()
+//The componentWillMount() method is called before the render() method when a component is being mounted to the DOM
+//The componentDidMount() method is called after a component is mounted to the DOM, the best practice with React is to place API calls or any calls to your server in this lifecycle method 
+class LifeCycles extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            users: 0
+        }
+    }
+    componentWillMount() {
+        console.log("componentWillMount()");
+    }
+    componentDidMount() {
+    //Mock API call, sets state after 2.5 seconds to simulate calling a server to retrieve data
+    setTimeout( () => {
+        this.setState({
+            users: 1273
+            });
+        }, 2500);
+    }
+    render() {
+        return (
+            <div>
+                <h5>componentWillMount()</h5>
+                <h5>componentDidMount()</h5>
+                <h6>USERS : {this.state.users}</h6>
+            </div>
+        );
+    }
+}
 //Syntax for both ES6 class components and functional components, ReactDOM.render(<ComponentToRender />, targetNode)
 ReactDOM.render(
     <div>
@@ -216,5 +470,11 @@ ReactDOM.render(
     <DisplayScore />
     <ResetPassword />
     <StatefulComponent />
+    <SetTheState />
+    <ToggleState />
+    <SimpleCounter />
+    <ControlledInput />
+    <ControlledForm />
+    <Display />
     </div>, 
     document.getElementById("root"));
