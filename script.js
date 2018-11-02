@@ -202,7 +202,6 @@ class StatefulComponent extends React.Component {
         );
     }
 }
-//*********************************************************************************************************************
 //To set the state
 class SetTheState extends React.Component {
     constructor(props) {
@@ -296,9 +295,9 @@ class SimpleCounter extends React.Component {
         return (
             <div>
                 <h3>The count is : {this.state.count}</h3>
-                <button className="btn btn-default button-success" onClick={this.increment}>Increment</button>
-                <button className="btn btn-default button-danger" onClick={this.decrement}>Decrement</button>
-                <button className="btn btn-default button-primary" onClick={this.reset}>Reset</button>
+                <button className="btn btn-default btn-success" onClick={this.increment}>Increment</button>
+                <button className="btn btn-default btn-danger" onClick={this.decrement}>Decrement</button>
+                <button className="btn btn-default btn-primary" onClick={this.reset}>Reset</button>
             </div>
         );
     }
@@ -320,7 +319,7 @@ class ControlledInput extends React.Component {
     render() {
         return (
             <div>
-                <input value={this.state.value} placeholder="Enter Input" onChange={this.handleChange} />
+                <input value={this.state.value} placeholder="Enter input..." onChange={this.handleChange} />
                 <h4>Controlled input : {this.state.input}</h4>
             </div> 
         );
@@ -354,7 +353,7 @@ class ControlledForm extends React.Component {
             <div>
                 <form onSubmit={this.handleSubmit}>
                     <input value={this.state.input} placeholder="Enter what to submit..." onChange={this.handleChange} />
-                    <button className="btn btn-default button-primary" type="submit">Submit</button>
+                    <button className="btn btn-default btn-primary" type="submit">Submit</button>
                 </form>
                 <h2>{this.state.submit}</h2>
             </div>
@@ -395,7 +394,7 @@ class GetNumber extends React.Component {
         return (
             <div>
                 <h2>Enter number: </h2>
-                <input value={this.props.input} placeholder="Number..." onChange={this.props.handleChange} />
+                <input value={this.props.value} placeholder="Number..." onChange={this.props.handleChange} />
             </div>
         );
     }
@@ -405,11 +404,12 @@ class Display extends React.Component {
         super(props);
         this.state = {
             text: "CR",
-            numb: 7
+            numb: ""
         };
         this.handleChange = this.handleChange.bind(this);
     }
     handleChange(event) {
+        console.log(typeof event.target.value, event.target.tagName);
         this.setState({
             numb: event.target.value
         });
@@ -419,62 +419,553 @@ class Display extends React.Component {
             <div>
                 <DisplayString text={this.state.text} />
                 <DisplayNumber numb={this.state.numb} />
-                <GetNumber input={this.state.numb} handleChange={this.handleChange} />
+                <GetNumber value={this.state.numb} handleChange={this.handleChange} />
             </div>
         );
     }
 }
 //Using lifecycle methods
-//componentWillMount(), componentDidMount()
+//Component lifecycles can be broken down into 4 stages, Initialization -> Mounting -> Updating -> Unmounting
+//componentWillMount(), componentDidMount(), componentWillUnmount(), componentWillReceiveProps(), componentWillUpdate(), componentDidUpdate(), shouldComponentUpdate()
 //The componentWillMount() method is called before the render() method when a component is being mounted to the DOM
-//The componentDidMount() method is called after a component is mounted to the DOM, the best practice with React is to place API calls or any calls to your server in this lifecycle method 
+//The componentDidMount() method is called after a component is mounted to the DOM, the best practice with React is to place API calls or any calls to your server in this lifecycle method, it is also the best place to attach any event listeners you need to add for specific functionality
+//The componentWillUnmount() method is called to do any clean up on React components before they are unmounted and destroyed
+//The componentWillReceiveProps() method is called whenever a component is receiving new props, componentWillReceiveProps -> componentWillUpdate -> componentDidUpdate
+//The componentDidUpdate() method is called immediately after a component re-renders
+//The shouldComponentUpdate() method can be called when child components receive new state or props, and declare specifically if the components should update or not
 class LifeCycles extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            users: 0
+            users: 0,
+            message: "",
+            visibility: false,
+            numb: "",
+            val: 0
+        };
+        this.handleEnter = this.handleEnter.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.toggleVisibility = this.toggleVisibility.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.addNum = this.addNum.bind(this);
+    }
+    handleEnter() {
+        this.setState({
+            message: this.state.message + "You pressed enter!!"
+        });
+    }
+    handleKeyPress(event) {
+        if(event.keyCode === 13) {
+            this.handleEnter();
         }
+    }
+    toggleVisibility() {
+        if(this.state.visibility) {
+            this.setState({
+                visibility: false
+            });
+        } else {
+            this.setState({
+                visibility: true
+            });
+        }
+    }
+    handleChange(event) {
+        this.setState({
+            numb: parseInt(event.target.value)
+        });
+    }
+    addNum() {
+        this.setState({
+            val: this.state.val + this.state.numb,
+            numb: ""
+        });
     }
     componentWillMount() {
         console.log("componentWillMount()");
     }
     componentDidMount() {
-    //Mock API call, sets state after 2.5 seconds to simulate calling a server to retrieve data
-    setTimeout( () => {
-        this.setState({
-            users: 1273
+        //Mock API call, sets state after 2.5 seconds to simulate calling a server to retrieve data
+        setTimeout( () => {
+            this.setState({
+                users: 1273,
             });
         }, 2500);
+        //Adding event listeners
+        document.addEventListener("keydown", this.handleKeyPress);
+    }
+    componentWillUnmount() {
+        document.removeEventListener("keydown", this.handleKeyPress);
     }
     render() {
         return (
             <div>
+                <h4><u>Life Cycles</u></h4>
                 <h5>componentWillMount()</h5>
                 <h5>componentDidMount()</h5>
                 <h6>USERS : {this.state.users}</h6>
+                <h5>componentWillUnmount()</h5>
+                <h6>{this.state.message}</h6>
+                <Dialog visibility={this.state.visibility} value={this.state.value}/>
+                <button className="btn btn-default btn-primary" onClick={this.toggleVisibility}>Toggle</button>
+                <OnlyEven value={this.state.numb} handleChange={this.handleChange} addNum={this.addNum} val={this.state.val} />
+                <h6>STATE VALUE: {this.state.val}</h6>
             </div>
         );
     }
 }
+class Dialog extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log(this.props, nextProps);
+
+    }
+    componentWillUpdate() {
+        console.log("Component is about to update...");
+    }
+    componentDidUpdate() {
+        console.log("Component updated!!")
+    }
+    render() {
+        if(this.props.visibility) {
+            return (
+                <div>
+                    <h5>componentWillReceiveProps()</h5>
+                    <h5>componentWillUpdate()</h5>
+                    <h5>componentDidUpdate()</h5>
+                </div>
+            );
+        } else {
+            return (
+                <div>
+                    <h6>Hidden!</h6>
+                </div>
+            );
+        }
+    }
+}
+class OnlyEven extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        console.log("Should I update?");
+        if(nextProps.val % 2 === 0) {
+            console.log("Yes!");
+            return true;
+        } else {
+            console.log("No!");
+            return false;
+        }
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log("Props received!");
+    }
+    componentDidUpdate() {
+        console.log("Component Re-Rendered!!");
+    }
+    render() {
+        return (
+            <div>
+                <h5>shouldComponentUpdate()</h5>
+                <input value={this.props.value} placeholder="Number to add..." onChange={this.props.handleChange} />
+                <button className="btn btn-default btn-primary" onClick={this.props.addNum}>Add</button>
+                <h6>PROPS VALUE : {this.props.val}</h6>
+            </div>
+        );
+    }
+}
+//To add inline styles
+//As a rule, any hyphenated style properties are written using camel case in JSX
+//All property value length units (like height, width, and fontSize) are assumed to be in px unless otherwise specified
+//If you want to use em, for example, you wrap the value and the units in quotes, like { fontSize: "4em" }
+//Other than the length values that default to px, all other property values should be wrapped in quotes
+class Styles extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        const styles = {
+            color: "purple",
+            fontSize: 40,
+            border: "2px solid purple"
+        }
+        return (
+            <div>
+                <p style={{color: "cyan", fontSize: 72}}>Inline Style 1</p>
+                <p style={styles}>Inline Style 2</p>
+            </div>
+        );
+    }
+}
+//Magic 8 Ball
+class MagicEightBall extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: "",
+            randomIndex: null
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.ask = this.ask.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            value: event.target.value
+        });
+    }
+    ask() {
+        if(this.state.value < 9 && this.state.value > -1) {
+            this.setState({
+                value: "",
+                randomIndex: Math.floor(Math.random() * 20)
+            })
+        };
+    }
+    render() {
+        const possibleAnswers = [
+            "It is certain",
+            "It is decidedly so",
+            "Without a doubt",
+            "Yes, definitely",
+            "You may rely on it",
+            "As I see it, yes",
+            "Outlook good",
+            "Yes",
+            "Signs point to yes",
+            "Reply hazy try again",
+            "Ask again later",
+            "Better not tell you now",
+            "Cannot predict now",
+            "Concentrate and ask again",
+            "Don't count on it",
+            "My reply is no",
+            "My sources say no",
+            "Most likely",
+            "Outlook not so good",
+            "Very doubtful"
+        ];
+        const answer = possibleAnswers[parseInt(this.state.randomIndex)];
+        return (
+            <div>
+                <GetBallValue val={this.state.value} handleChange={this.handleChange} />
+                <ShowBall message={answer} val={this.state.value} ask={this.ask} />
+            </div>
+        );
+    }
+}
+class GetBallValue extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <div>
+                <h4><u>Enter 8 ball value: </u></h4>
+                <input value={this.props.val} placeholder="1-8" onChange={this.props.handleChange} />
+            </div>
+        );
+    }
+}
+class ShowBall extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        if(nextProps.val < 9 && nextProps.val > -1) {
+            console.log("Update!");
+            return true;
+        } else {
+            console.log("No update!");
+            return false;
+        }
+    }
+    render() {
+        return (
+            <div>
+                <button className="btn btn-default btn-primary" onClick={this.props.ask}>Ask The Magic 8 Ball!!</button>
+                <h3>{this.props.message}</h3>
+            </div>
+        );
+    }
+}
+//Using && for concise conditionals
+class AndAnd extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            display: false
+        };
+        this.toggleDisplay = this.toggleDisplay.bind(this);
+    }
+    toggleDisplay() {
+        if(this.state.display) {
+            this.setState({
+                display: false
+            });
+        } else {
+            this.setState({
+                display: true
+            });
+        }
+    }
+    render() {
+        return (
+            <div>
+                <button className="btn btn-default btn-primary" onClick={this.toggleDisplay}>Click to Toggle!</button>
+                {this.state.display == true && <h2>Now You See Me!</h2>}
+                {this.state.display == false && <h2>Now You Do Not!</h2>}
+            </div>
+        );
+    }
+}
+//Using ternary expressions for condition rendering
+class CheckUserAge extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userAge: "",
+            input: ""
+        };
+        this.submit = this.submit.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.enter = this.enter.bind(this);
+        this.exit = this.exit.bind(this);
+    }
+    submit() {
+        this.setState({
+            userAge: this.state.input
+        });
+    }
+    handleChange(event) {
+        this.setState({
+            input: event.target.value,
+            userAge: ""
+        });
+    }
+    enter() {
+        alert("Hello User!!");
+    }
+    exit() {
+        alert("Error! Too Young!!");
+    }
+    render() {
+        const buttonOne = <button className="btn btn-default btn-primary" onClick={this.submit}>Submit</button>;
+        const buttonTwo = <button className="btn btn-default btn-success" onClick={this.enter}>You may enter!</button>;
+        const buttonThree = <button className="btn btn-default btn-danger" onClick={this.exit}>You may not pass!</button>
+        return (
+            <div>
+                <input value={this.state.input} placeholder="Enter Age!" type="number" onChange={this.handleChange} />
+                {
+                    (this.state.userAge >= 18)? buttonTwo: (this.state.userAge == "")? buttonOne: buttonThree
+                }
+            </div>
+        );
+    }
+}
+//Render conditionally from props
+class Result extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <div>
+                <h1>{this.props.fiftyFifty}</h1>
+            </div>
+        );
+    }
+}
+class GameOfChance extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            turn: 0, 
+            expression: null
+        };
+        this.handleClick = this.handleClick.bind(this);
+    }
+    handleClick() {
+        this.setState({
+            turn: this.state.turn + 1,
+            expression: Math.random() > 0.5
+        });
+    }
+    render() {
+        return (
+            <div>
+                <button className="btn btn-default btn-primary" onClick={this.handleClick}>PLAY</button>
+                {
+                    (this.state.expression == null)? <Result fiftyFifty="Click to Play!" />: (this.state.expression == 1)? <Result fiftyFifty="You Win!" />: <Result fiftyFifty="You Lose!" />
+                }
+                <h5>Turn : {this.state.turn}</h5>
+            </div>
+        );
+    }
+}
+//Conditionally change inline CSS based on component state
+class GateKeeper extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            input: ""
+        };
+        this.handleChange = this.handleChange.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            input: event.target.value
+        });
+    }
+    render() {
+        var inputStyle = {
+            border: "1px solid black"
+        };
+        if(this.state.input.length > 15) {
+            inputStyle = {
+                border: "5px solid red"
+            };
+        }
+        return (
+            <div>
+                <input value={this.state.input} placeholder="Enter..(15 characters)" style={inputStyle} onChange={this.handleChange} />
+            </div>
+        );
+    }
+}
+//Dynamically rendering elements using Arrays.map()
+class MyToDoList extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            userInput: "",
+            toDoList: []
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            userInput: event.target.value
+        });
+    }
+    handleSubmit() {
+        var itemsList = this.state.userInput.split(",");
+        this.setState({
+            userInput: "",
+            toDoList: itemsList
+        });
+    }
+    render() {
+        //All sibling child elements created by a mapping operation like this do need to be supplied with a unique key attribute
+        var items = this.state.toDoList.map((item, index) => {
+            return (
+                <li key={index}>
+                    {item}
+                </li>
+            );
+        });
+        const textAreaStyles = {
+            width: 235,
+            margin: 5
+        };
+        return (
+            <div>
+                <textarea value={this.state.userInput} placeholder="Enter comma separated items..." style={textAreaStyles} onChange={this.handleChange}/>
+                <br />
+                <button className="btn btn-default btn-success" onClick={this.handleSubmit}>Generate</button>
+                <h4><u>My To-Do List</u></h4>
+                <ul>
+                    {items}
+                </ul>
+            </div>
+        );
+    }
+}
+//Dynamically filter an array using Array.filter()
+class UsersOnline extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            users: [
+                {
+                    username: 'Jeff',
+                    online: true
+                },
+                {
+                    username: 'Alan',
+                    online: false
+                },
+                {
+                    username: 'Mary',
+                    online: true
+                },
+                {
+                    username: 'Jim',
+                    online: false
+                },
+                {
+                    username: 'Sara',
+                    online: true
+                },
+                {
+                    username: 'Laura',
+                    online: true
+                }
+            ]
+        }
+    }
+    render() {
+        var usersOnline = this.state.users.filter((user) => user.online == true);
+        var renderOnline = usersOnline.map((user, index) => {
+            return (
+                <li key={index+1}>
+                    {user.username}
+                </li>
+            );
+        });
+        return (
+            <div>
+                <h3><ul>Online:</ul></h3>
+                <ul>
+                    {renderOnline}
+                </ul>
+            </div>
+        );
+    }
+}
+//To render react on the server
+//ReactDOMServer.renderToString(<UsersOnline />);
 //Syntax for both ES6 class components and functional components, ReactDOM.render(<ComponentToRender />, targetNode)
 ReactDOM.render(
     <div>
-    {JSX}
-    {JSX_1}
-    <MyComponent_1 />
-    <MyComponent_2 />
-    <ParentComponent />
-    <SuperParent />
-    <Calender />
-    <ToDo />
-    <DisplayScore />
-    <ResetPassword />
-    <StatefulComponent />
-    <SetTheState />
-    <ToggleState />
-    <SimpleCounter />
-    <ControlledInput />
-    <ControlledForm />
-    <Display />
+        {JSX}
+        {JSX_1}
+        <MyComponent_1 />
+        <MyComponent_2 />
+        <ParentComponent />
+        <SuperParent />
+        <Calender />
+        <ToDo />
+        <DisplayScore />
+        <ResetPassword />
+        <StatefulComponent />
+        <SetTheState />
+        <ToggleState />
+        <SimpleCounter />
+        <ControlledInput />
+        <ControlledForm />
+        <Display />
+        <LifeCycles />
+        <Styles />
+        <MagicEightBall />
+        <AndAnd />
+        <CheckUserAge />
+        <GameOfChance />
+        <GateKeeper />
+        <MyToDoList />
+        <UsersOnline />
     </div>, 
     document.getElementById("root"));
