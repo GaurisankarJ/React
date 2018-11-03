@@ -1,23 +1,26 @@
 "use strict";
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import PropTypes from "prop-types";
 
 var JSX = <h1>Hello JSX!</h1>;
 var JSX_1 = (
-  <div className="myDiv">
-    <h1>Heading!!</h1>
-    <br />
-    {/*Every element must be closed*/}
-    <p>Paragraph!!</p>
-    <ul>
-        <li className="list-group-item">ListElement-1!!</li>
-        <hr />
-        <li className="list-group-item">ListElement-2!!</li>
-        <hr />
-        <li className="list-group-item">ListElement-3!!</li>
-    </ul>
-  </div>
-); 
+    <div className="myDiv">
+        <h1>Heading!!</h1>
+        <br />
+        {/*Every element must be closed*/}
+        <p>Paragraph!!</p>
+        <ul>
+            <li className="list-group-item">ListElement-1!!</li>
+            <hr />
+            <li className="list-group-item">ListElement-2!!</li>
+            <hr />
+            <li className="list-group-item">ListElement-3!!</li>
+        </ul>
+    </div>
+);
 //To create a React component
-var MyComponent_1 = function() {
+var MyComponent_1 = function () {
     return (
         <div>This is a component.</div>
     );
@@ -66,7 +69,7 @@ class ParentComponent extends React.Component {
                 <h4>I am parent of parent 1.</h4>
                 <FirstParent />
             </div>
-        ); 
+        );
     }
 }
 //You can render JSX elements, stateless functional components, and ES6 class components within other components
@@ -79,7 +82,7 @@ class SuperParent extends React.Component {
             <div>
                 <h3>I am super parent.</h3>
                 <FirstParent />
-                <ParentComponent/>
+                <ParentComponent />
             </div>
         )
     }
@@ -104,7 +107,7 @@ class Calender extends React.Component {
             </div>
         );
     }
-} 
+}
 //To pass arrays as props
 const List = (props) => {
     return (
@@ -135,8 +138,8 @@ List.defaultProps = { tasks: ["Eat", "Sleep", "Code", "Repeat"] };
 const SetScore = (props) => {
     return (
         <div>
-        <h4>Name : {props.name}</h4>
-        <h5>The score is : {props.score}</h5>
+            <h4>Name : {props.name}</h4>
+            <h5>The score is : {props.score}</h5>
         </div>
     );
 };
@@ -154,7 +157,30 @@ class DisplayScore extends React.Component {
         );
     }
 }
-SetScore.defaultProps = { score: 100, name: "God"}
+SetScore.defaultProps = { score: 100, name: "God" }
+//To define the props you expect
+//https://reactjs.org/docs/typechecking-with-proptypes.html
+const Items = props => {
+    return (
+        <div>
+            <h4>The number of items in cart : {props.qty}</h4>
+        </div>
+    );
+};
+Items.defaultProps = { qty: 0 };
+Items.propTypes = { qty: PropTypes.number.isRequired };
+class ShoppingCart extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return (
+            <div>
+                <Items qty={9} />
+            </div>
+        );
+    }
+}
 //Using this.props with ES6 class components
 class ReturnTempPassword extends React.Component {
     constructor(props) {
@@ -190,11 +216,11 @@ class StatefulComponent extends React.Component {
         this.state = {
             name: "Sankar",
             nickname: "Shanks"
-        };  
+        };
     }
     render() {
         const nickname = this.state.nickname;
-        return(
+        return (
             <div>
                 <h3>The name is {this.state.name}.</h3>
                 <h4>You can call me {nickname}.</h4>
@@ -210,7 +236,7 @@ class SetTheState extends React.Component {
             theState: "Initial State",
             countState: 0
         };
-        this.handleClick = this.handleClick.bind(this);{/*Binding this to a class method*/}
+        this.handleClick = this.handleClick.bind(this); {/*Binding this to a class method*/ }
     }
     handleClick() {
         this.setState({
@@ -238,7 +264,7 @@ class ToggleState extends React.Component {
         this.toggleVisibility = this.toggleVisibility.bind(this);
     }
     toggleVisibility() {
-        if(this.state.visibility) {
+        if (this.state.visibility) {
             this.setState({
                 visibility: false
             });
@@ -249,7 +275,7 @@ class ToggleState extends React.Component {
         }
     }
     render() {
-        if(this.state.visibility) {
+        if (this.state.visibility) {
             return (
                 <div>
                     <button className="btn btn-default btn-primary" onClick={this.toggleVisibility}>Hide</button>
@@ -321,7 +347,7 @@ class ControlledInput extends React.Component {
             <div>
                 <input value={this.state.value} placeholder="Enter input..." onChange={this.handleChange} />
                 <h4>Controlled input : {this.state.input}</h4>
-            </div> 
+            </div>
         );
     }
 }
@@ -342,7 +368,7 @@ class ControlledForm extends React.Component {
         });
     }
     handleSubmit(event) {
-        event.preventDefault();{/*To prevent the default form submit behavior which will refresh the web page*/}
+        event.preventDefault(); {/*To prevent the default form submit behavior which will refresh the web page*/ }
         this.setState({
             input: "",
             submit: this.state.input
@@ -455,12 +481,12 @@ class LifeCycles extends React.Component {
         });
     }
     handleKeyPress(event) {
-        if(event.keyCode === 13) {
+        if (event.keyCode === 13) {
             this.handleEnter();
         }
     }
     toggleVisibility() {
-        if(this.state.visibility) {
+        if (this.state.visibility) {
             this.setState({
                 visibility: false
             });
@@ -486,7 +512,7 @@ class LifeCycles extends React.Component {
     }
     componentDidMount() {
         //Mock API call, sets state after 2.5 seconds to simulate calling a server to retrieve data
-        setTimeout( () => {
+        setTimeout(() => {
             this.setState({
                 users: 1273,
             });
@@ -506,7 +532,7 @@ class LifeCycles extends React.Component {
                 <h6>USERS : {this.state.users}</h6>
                 <h5>componentWillUnmount()</h5>
                 <h6>{this.state.message}</h6>
-                <Dialog visibility={this.state.visibility} value={this.state.value}/>
+                <Dialog visibility={this.state.visibility} value={this.state.value} />
                 <button className="btn btn-default btn-primary" onClick={this.toggleVisibility}>Toggle</button>
                 <OnlyEven value={this.state.numb} handleChange={this.handleChange} addNum={this.addNum} val={this.state.val} />
                 <h6>STATE VALUE: {this.state.val}</h6>
@@ -529,7 +555,7 @@ class Dialog extends React.Component {
         console.log("Component updated!!")
     }
     render() {
-        if(this.props.visibility) {
+        if (this.props.visibility) {
             return (
                 <div>
                     <h5>componentWillReceiveProps()</h5>
@@ -552,7 +578,7 @@ class OnlyEven extends React.Component {
     }
     shouldComponentUpdate(nextProps, nextState) {
         console.log("Should I update?");
-        if(nextProps.val % 2 === 0) {
+        if (nextProps.val % 2 === 0) {
             console.log("Yes!");
             return true;
         } else {
@@ -594,7 +620,7 @@ class Styles extends React.Component {
         }
         return (
             <div>
-                <p style={{color: "cyan", fontSize: 72}}>Inline Style 1</p>
+                <p style={{ color: "cyan", fontSize: 72 }}>Inline Style 1</p>
                 <p style={styles}>Inline Style 2</p>
             </div>
         );
@@ -617,7 +643,7 @@ class MagicEightBall extends React.Component {
         });
     }
     ask() {
-        if(this.state.value < 9 && this.state.value > -1) {
+        if (this.state.value < 9 && this.state.value > -1) {
             this.setState({
                 value: "",
                 randomIndex: Math.floor(Math.random() * 20)
@@ -674,7 +700,7 @@ class ShowBall extends React.Component {
         super(props);
     }
     shouldComponentUpdate(nextProps, nextState) {
-        if(nextProps.val < 9 && nextProps.val > -1) {
+        if (nextProps.val < 9 && nextProps.val > -1) {
             console.log("Update!");
             return true;
         } else {
@@ -701,7 +727,7 @@ class AndAnd extends React.Component {
         this.toggleDisplay = this.toggleDisplay.bind(this);
     }
     toggleDisplay() {
-        if(this.state.display) {
+        if (this.state.display) {
             this.setState({
                 display: false
             });
@@ -759,7 +785,7 @@ class CheckUserAge extends React.Component {
             <div>
                 <input value={this.state.input} placeholder="Enter Age!" type="number" onChange={this.handleChange} />
                 {
-                    (this.state.userAge >= 18)? buttonTwo: (this.state.userAge == "")? buttonOne: buttonThree
+                    (this.state.userAge >= 18) ? buttonTwo : (this.state.userAge == "") ? buttonOne : buttonThree
                 }
             </div>
         );
@@ -782,7 +808,7 @@ class GameOfChance extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            turn: 0, 
+            turn: 0,
             expression: null
         };
         this.handleClick = this.handleClick.bind(this);
@@ -798,7 +824,7 @@ class GameOfChance extends React.Component {
             <div>
                 <button className="btn btn-default btn-primary" onClick={this.handleClick}>PLAY</button>
                 {
-                    (this.state.expression == null)? <Result fiftyFifty="Click to Play!" />: (this.state.expression == 1)? <Result fiftyFifty="You Win!" />: <Result fiftyFifty="You Lose!" />
+                    (this.state.expression == null) ? <Result fiftyFifty="Click to Play!" /> : (this.state.expression == 1) ? <Result fiftyFifty="You Win!" /> : <Result fiftyFifty="You Lose!" />
                 }
                 <h5>Turn : {this.state.turn}</h5>
             </div>
@@ -823,7 +849,7 @@ class GateKeeper extends React.Component {
         var inputStyle = {
             border: "1px solid black"
         };
-        if(this.state.input.length > 15) {
+        if (this.state.input.length > 15) {
             inputStyle = {
                 border: "5px solid red"
             };
@@ -873,7 +899,7 @@ class MyToDoList extends React.Component {
         };
         return (
             <div>
-                <textarea value={this.state.userInput} placeholder="Enter comma separated items..." style={textAreaStyles} onChange={this.handleChange}/>
+                <textarea value={this.state.userInput} placeholder="Enter comma separated items..." style={textAreaStyles} onChange={this.handleChange} />
                 <br />
                 <button className="btn btn-default btn-success" onClick={this.handleSubmit}>Generate</button>
                 <h4><u>My To-Do List</u></h4>
@@ -921,7 +947,7 @@ class UsersOnline extends React.Component {
         var usersOnline = this.state.users.filter((user) => user.online == true);
         var renderOnline = usersOnline.map((user, index) => {
             return (
-                <li key={index+1}>
+                <li key={index + 1}>
                     {user.username}
                 </li>
             );
@@ -938,6 +964,7 @@ class UsersOnline extends React.Component {
 }
 //To render react on the server
 //ReactDOMServer.renderToString(<UsersOnline />);
+
 //Syntax for both ES6 class components and functional components, ReactDOM.render(<ComponentToRender />, targetNode)
 ReactDOM.render(
     <div>
@@ -950,6 +977,7 @@ ReactDOM.render(
         <Calender />
         <ToDo />
         <DisplayScore />
+        <ShoppingCart />
         <ResetPassword />
         <StatefulComponent />
         <SetTheState />
@@ -967,5 +995,5 @@ ReactDOM.render(
         <GateKeeper />
         <MyToDoList />
         <UsersOnline />
-    </div>, 
+    </div>,
     document.getElementById("root"));
