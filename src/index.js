@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
+import ReduxApp from "./store";
 
 var JSX = <h1>Hello JSX!</h1>;
 var JSX_1 = (
@@ -49,7 +50,7 @@ const ChildComponent_2 = () => {
             <h6>I am child 2.</h6>
         </div>
     );
-}
+};
 const FirstParent = () => {
     return (
         <div>
@@ -58,7 +59,7 @@ const FirstParent = () => {
             <ChildComponent_2 />
         </div>
     );
-}
+};
 class ParentComponent extends React.Component {
     constructor(props) {
         super(props);
@@ -995,5 +996,6 @@ ReactDOM.render(
         <GateKeeper />
         <MyToDoList />
         <UsersOnline />
+        <ReduxApp />
     </div>, 
     document.getElementById("root"));
