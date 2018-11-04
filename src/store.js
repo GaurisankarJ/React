@@ -248,7 +248,6 @@ var showState = () => {
     console.log(store.getState())
 };
 store.subscribe(showState);
-
 //React component for export
 class ReduxApp extends React.Component {
     constructor(props) {
@@ -271,4 +270,98 @@ class ReduxApp extends React.Component {
         );
     }
 }
-export default ReduxApp;
+
+//React Redux
+//Redux Code
+const ADD = "ADD";
+var messageReducer = (state = [], action) => {
+    switch (action.type) {
+        case ADD:
+            return state.concat(action.message);
+        default:
+            return state;
+    }
+};
+var store = createStore(messageReducer);
+var addMessageAction = (message) => {
+    return {
+        type: ADD,
+        message
+    };
+};
+//React Code
+class DisplayMessages extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            input: ""
+        };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChange(event) {
+        this.setState({
+            input: event.target.value
+        });
+    }
+    handleSubmit() {
+        if(this.state.input != "") {
+            this.props.submitNewMessage(this.state.input);
+            this.setState({
+                input: ""
+            });
+        }
+    }
+    render() {
+        var renderMessage = this.props.messages.map((message, index) => {
+            return (
+                <li key={index + 1}>
+                    {message}
+                </li>
+            );
+        })
+        return (
+            <div>
+                <h4>Enter list item :</h4>
+                <input value={this.state.input} placeholder="Enter value...." onChange={this.handleChange} />
+                <button className="btn btn-default btn-success" onClick={this.handleSubmit}>Submit</button>
+                <h4><u>LIST</u></h4>
+                <h5>
+                    {renderMessage}
+                </h5>
+            </div>
+        );
+    }
+}
+//Map state to props
+var mapStateToProps = (state) => {
+    return {
+        messages: state
+    };
+};
+//Map dispatch to props
+var mapDispatchToProps = (dispatch) => {
+    return {
+        submitNewMessage: (message) => {
+            dispatch(addMessageAction(message));
+        }
+    };
+};
+//To connect Redux to React
+//If you want to omit one of the arguments to the connect method, you pass null in its place
+var Container = connect(mapStateToProps, mapDispatchToProps)(DisplayMessages);
+class AppWrapper extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <Provider store={store}>
+        <Container />
+      </Provider>
+    );
+  }
+}
+
+export { ReduxApp };
+export default AppWrapper;

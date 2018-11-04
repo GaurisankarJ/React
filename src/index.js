@@ -2,7 +2,8 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
-import ReduxApp from "./store";
+import { ReduxApp } from "./store";
+import AppWrapper from "./store";
 
 var JSX = <h1>Hello JSX!</h1>;
 var JSX_1 = (
@@ -547,7 +548,6 @@ class Dialog extends React.Component {
     }
     componentWillReceiveProps(nextProps) {
         console.log(this.props, nextProps);
-
     }
     componentWillUpdate() {
         console.log("Component is about to update...");
@@ -997,5 +997,6 @@ ReactDOM.render(
         <MyToDoList />
         <UsersOnline />
         <ReduxApp />
+        <AppWrapper />
     </div>, 
     document.getElementById("root"));
