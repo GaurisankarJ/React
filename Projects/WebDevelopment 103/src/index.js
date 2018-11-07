@@ -347,7 +347,7 @@ class ControlledInput extends React.Component {
     render() {
         return (
             <div>
-                <input value={this.state.value} placeholder="Enter input..." onChange={this.handleChange} />
+                <input value={this.state.input} placeholder="Enter input..." onChange={this.handleChange} />
                 <h4>Controlled input : {this.state.input}</h4>
             </div> 
         );
