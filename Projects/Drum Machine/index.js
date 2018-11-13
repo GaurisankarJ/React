@@ -80,7 +80,6 @@ class DrumPad extends React.Component {
         this.activatePad = this.activatePad.bind(this);
     }
     handleKeyPress(event) {
-        console.log(event.keyCode, this.props.keyCode);
         if(event.keyCode === this.props.keyCode) {
             this.playSound();
         }
