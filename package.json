@@ -23,6 +23,7 @@
     "@babel/core": "^7.1.2",
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
+    "accurate-interval": "^1.0.9",
     "babel-loader": "^8.0.4",
     "babel-plugin-react-require": "^3.0.1",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
