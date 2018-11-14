@@ -103,7 +103,7 @@ const calculatorReducer = (state = defaultState, action) => {
             var operator = action.operator;
             if(operator == "x") {
                 operator = "*";
-            } else if (operator == "‑") {
+            } else if(operator == "‑") {
                 operator = "-";
             }
             var formula = state.formula + operator;
@@ -111,7 +111,7 @@ const calculatorReducer = (state = defaultState, action) => {
                 formula = state.formula.slice(0, state.formula.length - 1) + operator; 
             }
             if(endsWithPeriod.test(state.lastClicked)) {
-                formula = state.formula + "0" + action.operator;
+                formula = state.formula + "0" + operator;
             }
             if(state.currentValue == "0" && operator == "-") {
                 formula = operator; 
@@ -124,6 +124,7 @@ const calculatorReducer = (state = defaultState, action) => {
         case HANDLE_EVALUATE:
             var formula = state.formula;
             var sum = "";
+            console.log(eval("+0.950+3"));
             if(!equalityCheck.test(state.lastClicked)) {
                 if(endsWithOperator.test(state.lastClicked) || endsWithPeriod.test(state.lastClicked)) {
                     formula = state.formula.slice(0, state.formula.length - 1);
@@ -131,6 +132,7 @@ const calculatorReducer = (state = defaultState, action) => {
                 sum = eval(formula).toString();
                 formula = formula + "=" + sum;
             } else {
+                sum = state.currentValue;
                 formula = state.formula
             }
             return Object.assign({}, state, {
