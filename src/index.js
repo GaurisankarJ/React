@@ -6,303 +6,123 @@ import { Provider } from "react-redux";
 import { connect } from "react-redux";
 import "./style.scss";
 
-//Redux Store
-const SET_BREAK = "SET_BREAK";
-const SET_SESSION = "SET_SESSION";
-const START_STOP = "START_STOP";
-const RESET = "RESET";
-const REDUCE_TIMER = "REDUCE_TIMER";
-const SET_TIMER = "SET_TIMER";
-const SET_DISPLAY = "SET_DISPLAY";
-const SET_COLOR = "SET_COLOR";
-const SET_TYPE = "SET_TYPE";
-const defaultState = {
-    break: 5,
-    running: false,
-    timer: 1500,
-    type: "Session",
-    alarmColor: { color: "white" },
-    display: "25:00" 
-};
-const clockReducer = (state = defaultState, action) => {
-    switch(action.type) {
-        case SET_BREAK: 
-            if(action.todo == "+BR") {
-                return Object.assign({}, state, { break: state.break + 1 });
-            } else if(action.todo == "-BR" && state.break > 1) {
-                return Object.assign({}, state, { break: state.break - 1 });
-            } else {
-                return state;
-            }
-        case SET_SESSION:
-            if(action.todo == "+SE") {
-                return Object.assign({}, state, { timer: state.timer + 60 });
-            } else if (action.todo == "-SE" && state.timer > 60) {
-                return Object.assign({}, state, { timer: state.timer - 60 });
-            } else {
-                return state;
-            }
-        case START_STOP:
-            return Object.assign({}, state, state.running = !state.running);
-        case RESET:
-            return Object.assign({}, {
-                break: 5,
-                running: false,
-                timer: 1500,
-                type: "Session",
-                alarmColor: { color: "white" },
-                display: "25:00"
-            });
-        case REDUCE_TIMER: 
-            return Object.assign({}, state, { timer: state.timer - 1 });
-        case SET_TIMER:
-            return Object.assign({}, state, { timer: action.timer })
-        case SET_DISPLAY:
-            return Object.assign({}, state, { display: action.output });
-        case SET_COLOR:
-            return Object.assign({}, state, { alarmColor: action.color });
-        case SET_TYPE:
-            return Object.assign({}, state, { type: "Break" });
-        default:
-            return state;
-    }
-};
-const setBreakAction = (operation) => {
-    return {
-        type: SET_BREAK,
-        todo: operation
-    };
-};
-const setSessionAction = (operation) => {
-    return {
-        type: SET_SESSION,
-        todo: operation
-    };
-};
-const startStopAction = () => {
-    return {
-        type: START_STOP
-    };
-};
-const resetAction = () => {
-    return {
-        type: RESET
-    };
-};
-const reduceTimerAction = () => {
-    return {
-        type: REDUCE_TIMER
-    };
-};
-const setTimerAction = (timer) => {
-    return {
-        type: SET_TIMER,
-        timer: timer
-    };
-};
-const setDisplayAction = (output) => {
-    return {
-        type: SET_DISPLAY,
-        output: output
-    };
-};
-const setColorAction = (color) => {
-    return {
-        type: SET_COLOR,
-        color: color
-    };
-};
-const setTypeAction = () => {
-    return {
-        type: SET_TYPE
-    };
-};
-const store = createStore(clockReducer);
-store.subscribe(() => console.log(store.getState()));
-
-//React Component
-let INTERVAL, SESSION = 25;
-class PomodoroClock extends React.Component {
+class App extends React.Component {
     constructor(props) {
         super(props);
-        this.handleClickBreak = this.handleClickBreak.bind(this);
-        this.handleClickSession = this.handleClickSession.bind(this);
-        this.clockify = this.clockify.bind(this);
-        this.handleClickTimer = this.handleClickTimer.bind(this);
-        this.handleClickReset = this.handleClickReset.bind(this); 
     }
-    handleClickBreak(event) {
-        if(!this.props.state.running) {
-            this.props.handleBreak(event.target.id);
-        }
-    }
-    handleClickSession(event) {
-        if(!this.props.state.running) {
-            this.props.handleSession(event.target.id);
-            if(event.target.id == "+SE") {
-                this.clockify(this.props.state.timer + 60);
-                SESSION = Math.floor((this.props.state.timer + 60) / 60);
-            } else if(event.target.id == "-SE" && SESSION > 1) {
-                this.clockify(this.props.state.timer - 60);
-                SESSION = Math.floor((this.props.state.timer - 60) / 60);
-            }
-        }
-    }
-    clockify(value = this.props.state.timer) {
-        var minutes = Math.floor(value / 60);
-        var seconds = value - minutes * 60;
-        if(minutes < 10) {
-            minutes = "0" + minutes;
-        }
-        if(seconds < 10) {
-            seconds = "0" + seconds;
-        }
-        if(this.props.state.timer < 60) {
-            this.props.handleColor({
-                color: "red"
-            });
+    componentDidMount() {
+    //Add document elements
+    const anchor = d3.select("a").append("h5").text("Sankar");
+    //Select a group of elements
+    d3.selectAll("li").text("List Element");
+    //Work with data
+    const dataset = [12, 31, 22, 17, 25, 18, 29, 14, 9];
+    d3.select("ul").selectAll("li").data(dataset).enter().append("h6").text("H6");
+    /*
+    When enter() is combined with the data() method, it looks at the selected elements from the page and compares them to the number of data items in the set. If there are fewer elements than data items, it creates the missing elements.
+    */
+    //Work with dynamic data
+    d3.select("ul").selectAll("li").data(dataset).enter().append("h6").text((d) => d + " USD");
+    //Add inline styling to elements
+    d3.select("ul").selectAll("li").data(dataset).enter().append("h6").text((d) => d + " USD").style("color", "blue");
+    //Change styles based on data
+    d3.select("ul").selectAll("li").data(dataset).enter().append("h6").text((d) => d + " USD").style("color", (d) => {
+        if(d > 20) {
+            return "red";
         } else {
-            this.props.handleColor({
-                color: "white"
-            });
+            return "green"
         }
-        if(this.props.state.timer == 0) {
-            //Play Sound
-            var sound = document.getElementById("beep");
-            sound.currentTime = 0;
-            sound.play();
-            //Reset to break 
-            var breakValue = this.props.state.break * 60;
-            console.log(breakValue);
-            this.props.handleSetTimer(breakValue);
-            if(this.props.state.type == "Session") {
-                this.props.handleType();
-            }
-        } 
-        var display = minutes + ":" + seconds;
-        this.props.handleDisplay(display);
-    }
-    handleClickTimer() {
-        this.props.handleStartStop();
-        if(this.props.state.running) {
-            INTERVAL = setInterval(() => {
-                this.props.handleReduceTimer();
-                this.clockify();
-            }, 1000);
-        } else {
-            clearInterval(INTERVAL);
-        }
-    }
-    handleClickReset() {
-        clearInterval(INTERVAL);
-        this.props.handleReset();
-        SESSION = 25;
+    });
+    //Add classes 
+    d3.select("a").attr("class", "anchor");
+    //Update the height of an element dynamically
+    d3.select("ul").selectAll("li").data(dataset).enter().append("div").attr("class", "bar").style("height", (d) => (10 * d + "px")).style("margin", "2px");
+    //Scalable Vector Graphics
+    const svg = d3.select("span").append("svg").attr("width", 500).attr("height", 120).style("background-color", "pink");
+    //Create a bar for each data point in the set,add hover effect, add tooltip
+    svg.selectAll("rect").data(dataset).enter().append("rect").attr("x", (d, i) => {
+        return i * 30;
+    }).attr("y", (d, i) => {
+        return 120 - d * 3;//In general, the relationship is y = h - m * d, where m is the constant that scales the data points.
+    }).attr("width", 25).attr("height", 100).attr("class", "bar").append("title").text(d => d);
+    //Add and style labels for elements
+    svg.selectAll("text").data(dataset).enter().append("text").attr("x", (d, i) => {
+        return i * 30;
+    }).attr("y", (d, i) => {
+        return 120 - d * 3 - 3;
+    }).text(d => d).style("font-size", "20px").attr("fill", "red")
+    //Display shapes with SVG, change the color of an SVG element
+    svg.append("rect").attr("width", 100).attr("height", 50).attr("x", 300).attr("y", 25).attr("fill", "navy");
+    //Create scatter plots with SVG circles
+    const circleDataset = [
+            [34, 78],
+            [109, 280],
+            [310, 120],
+            [79, 411],
+            [420, 220],
+            [233, 145],
+            [333, 96],
+            [222, 333],
+            [78, 320],
+            [21, 123]
+        ];
+    const padding = 30;
+    const scatterSVG = d3.select("article").append("svg").attr("width", 500).attr("height", 500);
+    scatterSVG.selectAll("circle").data(circleDataset).enter().append("circle").attr("cx", d => (padding + d[0])).attr("cy", d => (500 - d[1] - padding)).attr("r", "5").attr("fill", "red");
+    //Add labels to scatter plot circles
+    scatterSVG.selectAll("text").data(circleDataset).enter().append("text").attr("x", d => (padding + 5 + d[0])).attr("y", d => (500 - d[1] - padding)).text(d => (d[0] + ", " + d[1]));
+    //Create a linear scale, set a domain and range on a scale
+    const scale = d3.scaleLinear();
+    scale.domain([250, 500]).range([10, 150]);//This is the input information for a scale is domain, the output information is called range
+    var output = scale(50);
+    //Find the minimum and maximum values in a dataset
+    const positionData = [[1, 7, -4],[6, 3, 8],[2, 8, 3]];
+    var max = d3.max(positionData, d => d[2]);
+    var min = d3.min(positionData, d => d[2]);
+    //Use dynamic scales
+    const w = 500;
+    const h = 500;
+    const xScale = d3.scaleLinear().domain([0, d3.max(circleDataset, d => d[0])]).range([0, w - padding]);
+    const yScale = d3.scaleLinear().domain([0, d3.max(circleDataset, d => d[1])]).range([h - padding, padding]);
+    d3.select("article").append("h1").text(output + ", " + max + ", " + min + ", " + Math.ceil(xScale(411)) + ", " + yScale(411));
+    //Use predefined scales to place elements
+    /*
+    scatterSVG.selectAll("circle").data(circleDataset).enter().append("circle").attr("cx", d => xScale(d[0])).attr("cy", d => yScale(d[1])).attr("r", "5").attr("fill", "red");
+    scatterSVG.selectAll("text").data(circleDataset).enter().append("text").attr("x", d => xScale(5 + d[0])).attr("y", d => yScale(d[1])).text(d => (d[0] + ", " + d[1]));
+    */
+    //Add axes to a visualization
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+    scatterSVG.append("g").attr("transform", "translate(30, " + (h - padding) + ")").call(xAxis);
+    scatterSVG.append("g").attr("transform", "translate(" + padding + ", 0)").call(yAxis);
     }
     render() {
         return (
-            <div id="app">
-                <div id="title" className="main-title">
-                Pomodoro Clock
+            <div id="body">
+                <header>
+                    <h2>D3 - Data Driven Documents</h2>
+                </header>
+                <div id="playground">
+                    <a href="https://github.com/GaurisankarJ/"></a>
+                    <ul>
+                        <li>Example</li>
+                        <li>Example</li>
+                        <li>Example</li>
+                    </ul>
+                    <span>
+                    </span>
+                    <article>
+                    </article>
                 </div>
-                <div id="break" className="length-control">
-                    <div id="break-label">Break Length</div>
-                    <button id="break-decrement" className="btn-level" onClick={this.handleClickBreak}>
-                        <i id="-BR" className="fa fa-arrow-down fa-2x" />
-                    </button>
-                    <div id="break-length" className="btn-level">{this.props.state.break}</div>
-                    <button id="break-increment" className="btn-level" onClick={this.handleClickBreak}>
-                        <i id="+BR" className="fa fa-arrow-up fa-2x" />
-                    </button>
-                </div>
-                <div id="session" className="length-control">
-                    <div id="session-label">Session Length</div>
-                    <button id="session-decrement" className="btn-level" onClick={this.handleClickSession}>
-                        <i id="-SE" className="fa fa-arrow-down fa-2x" />
-                    </button>
-                    <div id="session-length" className="btn-level">{SESSION}</div>
-                    <button id="session-increment" className="btn-level" onClick={this.handleClickSession}>
-                        <i id="+SE" className="fa fa-arrow-up fa-2x" />
-                    </button>
-                </div>
-                <div id="timer" className="timer" style={this.props.state.alarmColor}>
-                    <div className="timer-wrapper">
-                        <div id="timer-label">{this.props.state.type}</div>
-                        <div id="time-left">{this.props.state.display}</div>
-                    </div>
-                </div>
-                <div id="timer-control" className="timer-control">
-                    <button id="start-stop" onClick={this.handleClickTimer}>
-                        <i className="fa fa-play fa-2x" />
-                        <i className="fa fa-pause fa-2x" />
-                    </button>
-                    <button id="reset" onClick={this.handleClickReset}>
-                        <i className="fa fa-refresh fa-2x" />
-                    </button>
-                </div>
-                <div id="author" className="author">
-                    Coded by <a href="https://github.com/GaurisankarJ/" target="_blank">Sankar</a>
-                </div>
-                <audio id="beep" preload="auto" src="https://goo.gl/65cBl1" />
+                <footer>
+                    <h5>&copy; Started on <time dateTime="2018-11-21">21<sup>st</sup>November, 2018</time></h5>
+                </footer>
             </div>
         );
-    }
-}
-
-//Map state, dispatch to props
-const mapStatetoProps = (state) => {
-    return {
-        state: state
-    };
-};
-const mapDispatchToProps = (dispatch) => {
-    return {
-        handleBreak: (event) => {
-            dispatch(setBreakAction(event));
-        },
-        handleSession: (event) => {
-            dispatch(setSessionAction(event));
-        },
-        handleStartStop: () => {
-            dispatch(startStopAction());
-        },
-        handleReset: () => {
-            dispatch(resetAction());
-        },
-        handleReduceTimer: () => {
-            dispatch(reduceTimerAction());
-        },
-        handleSetTimer: (event) => {
-            dispatch(setTimerAction(event));
-        },
-        handleDisplay: (event) => {
-            dispatch(setDisplayAction(event));
-        },
-        handleColor: (event) => {
-            dispatch(setColorAction(event));
-        },
-        handleType: () => {
-            dispatch(setTypeAction());
-        }
-    };
-};
-
-//Connect Redux and React
-const Container = connect(mapStatetoProps, mapDispatchToProps)(PomodoroClock);
-
-class Presentation extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        return (
-            <Provider store={store}>
-                <Container />
-            </Provider>
-        );
+        
     }
 }
 ReactDOM.render(
-    <Presentation />,
-    document.getElementById("container")
+    <App />,
+    document.getElementById("root")
 );
-
