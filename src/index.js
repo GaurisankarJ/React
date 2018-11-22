@@ -9,6 +9,8 @@ import "./style.scss";
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.ajaxGET = this.ajaxGET.bind(this);
+        this.ajaxPOST = this.ajaxPOST.bind(this);
     }
     componentDidMount() {
     //Add document elements
@@ -95,6 +97,50 @@ class App extends React.Component {
     const yAxis = d3.axisLeft(yScale);
     scatterSVG.append("g").attr("transform", "translate(30, " + (h - padding) + ")").call(xAxis);
     scatterSVG.append("g").attr("transform", "translate(" + padding + ", 0)").call(yAxis);
+
+    //Ajax and API's 
+    //https://reactjs.org/docs/faq-ajax.html
+    document.addEventListener("DOMContentLoaded", this.ajaxGET);
+    document.addEventListener("DOMContentLoaded", this.ajaxPOST);
+    }
+    ajaxGET() {
+        request = new XMLHttpRequest();
+        request.open("GET", "https://reqres.in/api/users?page=2", true);
+        request.send();
+        request.onload = function() {
+            json = JSON.parse(request.responseText);
+            var html = "";
+            //To prefilter JSON
+            // json = json.filter(function(val) {
+            //     return (val.id !== 1);
+            // });
+            json.forEach(function(val) {
+                var keys = Object.keys(val);
+                html += "<div className = 'cat'>";
+                keys.forEach(function(key) {
+                    html += "<strong>" + key + "</strong>: " + val[key] + "<br>";
+                });
+            html += "</div><br>";
+            });
+            document.getElementsByClassName("message")[0].innerHTML = html;//document.getElementsByClassName("message")[0].innerHTML = JSON.stringify(json)
+        }
+        if(navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                document.getElementById("data").innerHTML="<strong>Latitude:</strong> "+ position.coords.latitude + "<br><strong>Longitude:</strong> " + position.coords.longitude;
+            });
+        }
+    }
+    ajaxPOST() {
+        var userName=document.getElementById("name").value;
+        req=new XMLHttpRequest();
+        req.open("POST", url, true);
+        req.setRequestHeader('Content-Type','text/plain');
+        req.onreadystatechange = function(){
+            if(req.readyState == 4 && req.status == 200) {
+                document.getElementsByClassName("message")[0].innerHTML = req.responseText;
+            }
+        };
+        req.send(userName);
     }
     render() {
         return (
@@ -113,6 +159,17 @@ class App extends React.Component {
                     </span>
                     <article>
                     </article>
+                    <div className="message box">
+                        The message will go here
+                    </div>
+                    <div id="data" className="box">
+                        Location
+                    </div>
+                    <button id="getMessage" className="btn btn-default btn-primary" onClick={this.ajaxGET}>Get Message</button>
+                    <label for="name">Your name:
+                        <input type="text" id="name"/>
+                    </label>
+                    <button id="sendMessage" className="btn btn-default btn-primary" onClick={this.ajaxPOST}>Send Message</button>
                 </div>
                 <footer>
                     <h5>&copy; Started on <time dateTime="2018-11-21">21<sup>st</sup>November, 2018</time></h5>
