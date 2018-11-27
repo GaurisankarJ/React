@@ -6,9 +6,15 @@ import { Provider } from "react-redux";
 import { connect } from "react-redux";
 import "./style.scss";
 
+let request, json;
 class App extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            error: null,
+            isLoaded: false,
+            items: []
+        };
         this.ajaxGET = this.ajaxGET.bind(this);
         this.ajaxPOST = this.ajaxPOST.bind(this);
     }
@@ -100,47 +106,81 @@ class App extends React.Component {
 
     //Ajax and API's 
     //https://reactjs.org/docs/faq-ajax.html
+    /*
+    For JavaScript,
     document.addEventListener("DOMContentLoaded", this.ajaxGET);
     document.addEventListener("DOMContentLoaded", this.ajaxPOST);
+    */
+    fetch("http://localhost:3000/data").then(res => res.json()).then((result) => {
+            console.log("INN")
+            this.setState({
+                isLoaded: true,
+                items: result
+            });
+        }, (error) => {
+            this.setState({
+                isLoaded: true,
+                error
+            });
+        }
+    );
     }
     ajaxGET() {
+        console.log(this.state);
+        /*
+        //Change text by class name
+        document.getElementsByClassName("message")[0].textContent = "Change text by class name!!";
+        //Get JSON with the JavaScript XMLHttpRequest method
         request = new XMLHttpRequest();
-        request.open("GET", "https://reqres.in/api/users?page=2", true);
+        request.open("GET", "http://localhost:3000/db", true);
+        request.send();
+        request.onload = function () {
+            json = JSON.parse(request.responseText);
+            document.getElementsByClassName("message")[0].innerHTML = JSON.stringify(json);
+        };
+        */
+        request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:3000/data", true);
         request.send();
         request.onload = function() {
             json = JSON.parse(request.responseText);
+            //console.log(JSON.stringify(json));
             var html = "";
             //To prefilter JSON
-            // json = json.filter(function(val) {
-            //     return (val.id !== 1);
-            // });
-            json.forEach(function(val) {
+            json = json.filter((val) => {
+                return (val.id !== 1);
+            });
+            json.forEach((val) => {
                 var keys = Object.keys(val);
                 html += "<div className = 'cat'>";
-                keys.forEach(function(key) {
+                keys.forEach((key) => {
                     html += "<strong>" + key + "</strong>: " + val[key] + "<br>";
                 });
+            //Render images from data sources
+            html += "<img src = '" + val.imageLink + "' " + "alt='" + val.altText + "'>";
             html += "</div><br>";
             });
-            document.getElementsByClassName("message")[0].innerHTML = html;//document.getElementsByClassName("message")[0].innerHTML = JSON.stringify(json)
+            document.getElementsByClassName("message")[0].innerHTML = html;
         }
+        //To get geolocation data 
         if(navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
+            navigator.geolocation.getCurrentPosition((position) => {
                 document.getElementById("data").innerHTML="<strong>Latitude:</strong> "+ position.coords.latitude + "<br><strong>Longitude:</strong> " + position.coords.longitude;
             });
         }
     }
     ajaxPOST() {
-        var userName=document.getElementById("name").value;
-        req=new XMLHttpRequest();
-        req.open("POST", url, true);
-        req.setRequestHeader('Content-Type','text/plain');
-        req.onreadystatechange = function(){
-            if(req.readyState == 4 && req.status == 200) {
-                document.getElementsByClassName("message")[0].innerHTML = req.responseText;
+        var userName = document.getElementById("name").value;
+        var url = "http://localhost:3000/data";
+        request = new XMLHttpRequest();
+        request.open("POST", url, true);
+        request.setRequestHeader("Content-Type","text/plain");
+        request.onreadystatechange = () => {
+            if(request.readyState == 4 && request.status == 200) {
+                document.getElementsByClassName("message")[0].innerHTML = request.responseText;
             }
         };
-        req.send(userName);
+        request.send(userName);
     }
     render() {
         return (
@@ -166,9 +206,11 @@ class App extends React.Component {
                         Location
                     </div>
                     <button id="getMessage" className="btn btn-default btn-primary" onClick={this.ajaxGET}>Get Message</button>
-                    <label for="name">Your name:
-                        <input type="text" id="name"/>
+                    <br />
+                    <label htmlFor="name">
+                        <input type="text" id="name" placeholder="Your name..." />
                     </label>
+                    <br />
                     <button id="sendMessage" className="btn btn-default btn-primary" onClick={this.ajaxPOST}>Send Message</button>
                 </div>
                 <footer>
