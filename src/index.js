@@ -111,8 +111,8 @@ class App extends React.Component {
     document.addEventListener("DOMContentLoaded", this.ajaxGET);
     document.addEventListener("DOMContentLoaded", this.ajaxPOST);
     */
+   //Fetching data in React
     fetch("http://localhost:3000/data").then(res => res.json()).then((result) => {
-            console.log("INN")
             this.setState({
                 isLoaded: true,
                 items: result
